@@ -8,15 +8,25 @@
 /**
  * Auth service, provides the API used
  * @constructor
+ * @param originRmiService - The service used to call the host server
  */
- module.exports = function Auth() {
+ module.exports = function Auth(originRmiService) {
     //Protect the constructor from being called as a normal method
     if (!(this instanceof Auth)) {
         return new Auth();
     }
+    auth = this;
+    this.originRmiService = originRmiService;
 
-    this.login = function(user, options) => SatellizerLocal.login(user, options),
-    this.signup = function(user, options) => SatellizerLocal.signup(user, options),
+   /**
+    * Login directlly to the origin server 
+    */
+    this.login = (user, options) => auth.originRmiService.login(user, options);
+     
+   /**
+    * Signup on the origin server for a new account
+    */
+    this.signup = (user, options) => auth.originRmiService.signup(user, options);
     this.logout = function() => SatellizerShared.logout(),
     this.authenticate = function(name, data) => SatellizerOAuth.authenticate(name, data),
     this.link = function(name, data) => SatellizerOAuth.authenticate(name, data),
