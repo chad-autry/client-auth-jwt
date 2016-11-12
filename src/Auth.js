@@ -39,11 +39,12 @@ var storage = require('./Storage.js');
     */
     this.logout = () => { 
         storage.remove(this.prefixedTokenName);
-        return this.$q.when() 
     };
-    this.authenticate = function(name, data) => SatellizerOAuth.authenticate(name, data),
-    this.link = function(name, data) => SatellizerOAuth.authenticate(name, data),
-    this.unlink = function(name, options) => SatellizerOAuth.unlink(name, options),
+    this.authenticate = (name, data) => SatellizerOAuth.authenticate(name, data),
+
+    //link ommited, since it is the same as authenticate
+
+    this.unlink = (name, options) => SatellizerOAuth.unlink(name, options),
    /**
     * Check if a user is currentlly logged on
     * @return {boolean} - True if a user is currentlly logged on
@@ -68,19 +69,44 @@ var storage = require('./Storage.js');
       }
       return false; // Fail: No token at all
     };
-    this.getPayload = function() => SatellizerShared.getPayload(),
-    this.getToken = function() => SatellizerShared.getToken(),
-    this.setToken = function(token) => SatellizerShared.setToken({ access_token: token }),
-    this.removeToken = function() => SatellizerShared.removeToken(),
+
+   /**
+    * Extract the payload from the stored JWT
+    */
+    this.getPayload = () => {
+        const token = storage.get(auth.prefixedTokenName);
+
+        if (token && token.split('.').length === 3) {
+            try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace('-', '+').replace('_', '/');
+            return JSON.parse(decodeBase64(base64));
+        } catch (e) {
+            // no-op
+        }
+    };
+
+   /**
+    * Get the JWT token from storage
+    */
+    this.getToken = ()  => {
+        return storage.get(auth.prefixedTokenName);
+    };
+   
+   /**
+    * Set the JWT token into storage
+    */ 
+    this.setToken = (token) => storage.setToken({ access_token: token });
+     
+   //temove token ommited since it is the same function as logout
+
    /**
     * Set the type of storage to use
     */
     this.setStorageType = (type) => storage.setStorageType(type);
 };
 
-  getToken(): string {
-    return this.SatellizerStorage.get(this.prefixedTokenName);
-  }
+
 
   getPayload(): any {
     const token = this.SatellizerStorage.get(this.prefixedTokenName);
