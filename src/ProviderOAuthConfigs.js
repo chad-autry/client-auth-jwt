@@ -2,7 +2,7 @@
 /**
  * An object map of the various built in 3rd Party OAuth(1 | 2) provider configs
  * They need to be configured before use (with the app token generally)
- * @module AuthProviders
+ * @module ProviderOAuthConfigs
  */
  
 var defaultOAuth1Config = require('./defaultOAuth1Config.js');
