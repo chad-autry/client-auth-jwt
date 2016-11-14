@@ -6,6 +6,7 @@
  */
 
 //The storage service
+var config = require('./Config.js');
 var storage = require('./Storage.js');
  
 /**
@@ -21,8 +22,7 @@ var storage = require('./Storage.js');
     auth = this;
     this.originRmiService = originRmiService;
     
-    //TODO
-    this.prefixedTokenName = tokenPrefix ? [tokenPrefix, tokenName].join('_') : tokenName;
+    this.prefixedTokenName = config.tokenPrefix ? [config.tokenPrefix, config.tokenName].join('_') : config.tokenName;
 
    /**
     * Login directlly to the origin server 
@@ -35,7 +35,7 @@ var storage = require('./Storage.js');
     this.signup = (user, options) => auth.originRmiService.signup(user, options);
 
    /**
-    * 
+    * Remove locally stored authentication
     */
     this.logout = () => { 
         storage.remove(this.prefixedTokenName);
@@ -98,29 +98,13 @@ var storage = require('./Storage.js');
     */ 
     this.setToken = (token) => storage.setToken({ access_token: token });
      
-   //temove token ommited since it is the same function as logout
+   //remove token ommited since it is the same function as logout
 
    /**
     * Set the type of storage to use
     */
     this.setStorageType = (type) => storage.setStorageType(type);
 };
-
-
-
-  getPayload(): any {
-    const token = this.SatellizerStorage.get(this.prefixedTokenName);
-
-    if (token && token.split('.').length === 3) {
-      try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace('-', '+').replace('_', '/');
-        return JSON.parse(decodeBase64(base64));
-      } catch (e) {
-        // no-op
-      }
-    }
-  }
 
   setToken(response): void {
     const tokenRoot = this.SatellizerConfig.tokenRoot;
