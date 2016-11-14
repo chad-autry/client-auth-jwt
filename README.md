@@ -8,3 +8,19 @@ While not a true fork, much has been copied from [Satellizer](https://github.com
 * Written with the build system I'm most comfrotable with
 * Refactored classes to make a bit simpler to my way of thinking
 * Removed redundant methods
+
+## Useage
+```
+//Require and instantiate a jquery based RMI service to contact the origin host
+var jqueryRMI = new require('auth-jwt/JqueryRMI')(jquery);
+
+//Require and instantiate an Auth service, passing in the jqueryRMI instance
+var authService = new require('auth-jwt')(jqueryRMI);
+
+//Configure the 3rd party providers on the service as required
+authService.providerOAuthConfigs['google'].clientId = 'GoogleClientId';
+
+//Bind authService.isAuthenticated() to control showing login button
+//Get data embedded in the JWT from the server, for client side use authService.getPayload().name
+
+```
