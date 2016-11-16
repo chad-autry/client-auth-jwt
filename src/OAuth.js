@@ -7,13 +7,18 @@
 
 //The storage service
 var storage = require('./Storage.js');
+//The provider configurations
+const ProviderOAuthConfigs = require('./ProviderOAuthConfigs.js');
  
 /**
  * OAuth service, handles the workflow to authorize a user with 3rd party services
  * @constructor
+ * @param config - The config for auth-jwt
  * @param originRmiService - The service used to call the host server (not required for all workflows)
  */
-module.exports = function OAuth(originRmiService) {
+module.exports = function OAuth(config, originRmiService) {
+    this.config = config;
+    this.originRmiService = originRmiService;
 };
 
 /**
@@ -21,5 +26,6 @@ module.exports = function OAuth(originRmiService) {
  * Doubles to link a user to a new service, if already authenticated
  * @param {Object} options - The options controlling the workflow
  */
-module.exports.prototype.authenticate = function(options) {
+module.exports.prototype.authenticate = function(name, userData) {
+    const provider = ProviderOAuthConfigs[name];
 };
