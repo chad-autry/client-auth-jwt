@@ -4,8 +4,9 @@
   "description": "Token-based JS Authentication",
   "scripts": {
     "build": "mkdirp ./target && webpack --config ./webpack-prod.config.js",
-    "jshint": "jshint ./src/*",
-    "clean": "rimraf ./target"
+    "eslint": "eslint ./src/*",
+    "clean": "rimraf ./target",
+    "esinit": "eslint --init"
   },
   "keywords": [
     "authentication",
@@ -43,16 +44,9 @@
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.7",
     "babel-preset-latest": "^6.16.0",
-    "jshint": "^2.9.1-rc1",
+    "eslint": "^3.10.2",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.4.4",
     "webpack": "^1.13.3"
-  },
-  "jshintConfig": {
-    "node": "true",
-    "predef": [
-      "document"
-    ],
-    "esversion": 6
   }
 }
