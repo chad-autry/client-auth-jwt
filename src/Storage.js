@@ -5,21 +5,12 @@
  * @module Storage
  */
  
- let memoryStore = {};
+let memoryStore = {};
  
 /**
  * Export a static container object with utility methods
  */
 module.exports = {};
-
-/**
- * Start an authentication workflow with the remote service using the given options
- * Doubles to link a user to a new service, if already authenticated
- * @param {Object} options - The options controlling the workflow
- */
-module.exports.prototype.authenticate = function(name, userData) {
-    const provider = ProviderOAuthConfigs[name];
-};
 
 /**
  * Retrieve a key from the specified storage type, or local memory storage on on failure
