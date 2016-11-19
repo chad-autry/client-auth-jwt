@@ -28,4 +28,15 @@ module.exports = function OAuth(config, originRmiService) {
  */
 module.exports.prototype.authenticate = function(name, userData) {
     const provider = ProviderOAuthConfigs[name];
+    
+    switch (provider.oauthType) {
+        case '1.0':
+            oauth = new OAuth1(this.$http, this.$window, this.SatellizerConfig, this.SatellizerPopup);
+            break;
+        case '2.0':
+            oauth = new OAuth2(this.$http, this.$window, this.$timeout, this.$q, this.SatellizerConfig, this.SatellizerPopup, this.SatellizerStorage);
+            break;
+        default:
+            return reject(new Error('Invalid OAuth Type'));
+    }
 };
