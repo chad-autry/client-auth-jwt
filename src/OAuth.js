@@ -30,13 +30,90 @@ module.exports.prototype.authenticate = function(name, userData) {
     const provider = ProviderOAuthConfigs[name];
     
     switch (provider.oauthType) {
-        case '1.0':
-            oauth = new OAuth1(this.$http, this.$window, this.SatellizerConfig, this.SatellizerPopup);
+        case '1.0': {
+            //oauth = new OAuth1(this.$http, this.$window, this.SatellizerConfig, this.SatellizerPopup);
             break;
-        case '2.0':
-            oauth = new OAuth2(this.$http, this.$window, this.$timeout, this.$q, this.SatellizerConfig, this.SatellizerPopup, this.SatellizerStorage);
+        }
+        case '2.0': {
+            //Pop up a window for the provider's url
+            const url = [provider.authorizationEndpoint, buildQueryString()].join('?');
+            const width = provider.width || 500;
+            const height = provider.height || 500;
+            const options = {
+                width: width,
+                height: height,
+                top: window.screenY + ((window.outerHeight - height) / 2.5),
+                left: window.screenX + ((window.outerWidth - width) / 2)
+            };
+            const popup = window.open(url, '_blank', stringifyOptions(options, ','));
+        
+            if (url === 'about:blank') {
+                popup.document.body.innerHTML = 'Loading...';
+            }
+            //Poll the popup to see if it is sent to the backend, then forwarded
+            //Extract the info from the popup
+            //If needed (some special cases) use the rmiService to make a manual call to the backend
+        
             break;
-        default:
-            return reject(new Error('Invalid OAuth Type'));
+        }
+        default: {
+            //return reject(new Error('Invalid OAuth Type'));
+        }
     }
 };
+
+/**
+ * Local utility method
+ * @return {string} - The query string
+ */
+function buildQueryString(providerOptions) {
+    const keyValuePairs = [];
+    const urlParamsCategories = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
+
+    urlParamsCategories.forEach((paramsCategory) => {
+        providerOptions[paramsCategory].forEach( (paramName) => {
+            const camelizedName = camelCase(paramName);
+            let paramValue = isFunction(providerOptions[paramName]) ? providerOptions[paramName]() : providerOptions[camelizedName];
+
+            if (paramName === 'redirect_uri' && !paramValue) {
+                return;
+            }
+            if (paramName === 'state') {
+                const stateName = this.defaults.name + '_state';
+                paramValue = encodeURIComponent(this.SatellizerStorage.get(stateName));
+            }
+            if (paramName === 'scope' && Array.isArray(paramValue)) {
+                paramValue = paramValue.join(this.defaults.scopeDelimiter);
+                if (this.defaults.scopePrefix) {
+                    paramValue = [this.defaults.scopePrefix, paramValue].join(this.defaults.scopeDelimiter);
+                }
+            }
+            keyValuePairs.push([paramName, paramValue]);
+        });
+    });
+
+    return keyValuePairs.map(pair => pair.join('=')).join('&');
+}
+
+function isFunction(functionToCheck) {
+    var getType = {};
+    return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
+}
+
+function camelCase(name) {
+    return name.replace(/([\:\-\_]+(.))/g, (_, separator, letter, offset) => {
+        return offset ? letter.toUpperCase() : letter;
+    });
+}
+
+function stringifyOptions(options) {
+    const parts = [];
+    options.forEach( function (value, key) {
+        parts.push(key + '=' + value);
+    });
+    return parts.join(',');
+}
+
+function pollPopup() {
+    
+}
