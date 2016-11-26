@@ -9,7 +9,7 @@
 //The storage service
 var defaultConfig = require('./defaultConfig.js');
 var storage = require('./Storage.js');
-var OAuth = new require('./OAuth.js');
+var OAuth = require('./OAuth.js');
  
 /**
  * Auth service, provides the API used
@@ -28,6 +28,7 @@ module.exports = function Auth(originRmiService, config) {
         config = {...config, ...defaultConfig};
     }
     const auth = this;
+    const oauth = new OAuth(config, null);
     this.originRmiService = originRmiService;
     
     this.prefixedTokenName = config.tokenPrefix ? [config.tokenPrefix, config.tokenName].join('_') : config.tokenName;
@@ -48,11 +49,13 @@ module.exports = function Auth(originRmiService, config) {
     this.logout = () => {
         storage.remove(this.prefixedTokenName);
     };
-    this.authenticate = (name, data) => OAuth.authenticate(name, data),
+    this.authenticate = (name, data) => {
+        oauth.authenticate(name, data);
+    }
 
     //link ommited, since it is the same as authenticate
 
-    this.unlink = (name, options) => OAuth.unlink(name, options),
+    this.unlink = (name, options) => oauth.unlink(name, options);
    /**
     * Check if a user is currentlly logged on
     * @return {boolean} - True if a user is currentlly logged on

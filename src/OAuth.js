@@ -36,7 +36,7 @@ module.exports.prototype.authenticate = function(name, userData) {
         }
         case '2.0': {
             //Pop up a window for the provider's url
-            const url = [provider.authorizationEndpoint, buildQueryString()].join('?');
+            const url = [provider.authorizationEndpoint, buildQueryString(provider)].join('?');
             const width = provider.width || 500;
             const height = provider.height || 500;
             const options = {
@@ -108,9 +108,13 @@ function camelCase(name) {
 
 function stringifyOptions(options) {
     const parts = [];
-    options.forEach( function (value, key) {
-        parts.push(key + '=' + value);
-    });
+    for (var prop in options) {
+        // skip loop if the property is from prototype
+        if(!options.hasOwnProperty(prop)) continue;
+
+        parts.push(prop + '=' + options[prop]);
+    }
+
     return parts.join(',');
 }
 

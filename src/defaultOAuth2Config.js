@@ -14,7 +14,8 @@ module.exports = {
     scopePrefix: null,
     scopeDelimiter: null,
     state: null,
-    requiredUrlParams: null,
+    requiredUrlParams: [],
+    optionalUrlParams: [],
     defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
     responseType: 'code',
     responseParams: {
