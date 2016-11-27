@@ -79,13 +79,13 @@ function buildQueryString(providerOptions) {
                 return;
             }
             if (paramName === 'state') {
-                const stateName = this.defaults.name + '_state';
-                paramValue = encodeURIComponent(this.SatellizerStorage.get(stateName));
+                const stateName = providerOptions.name + '_state';
+                paramValue = encodeURIComponent(storage.get(stateName));
             }
             if (paramName === 'scope' && Array.isArray(paramValue)) {
-                paramValue = paramValue.join(this.defaults.scopeDelimiter);
-                if (this.defaults.scopePrefix) {
-                    paramValue = [this.defaults.scopePrefix, paramValue].join(this.defaults.scopeDelimiter);
+                paramValue = paramValue.join(providerOptions.scopeDelimiter);
+                if (providerOptions.scopePrefix) {
+                    paramValue = [providerOptions.scopePrefix, paramValue].join(providerOptions.scopeDelimiter);
                 }
             }
             keyValuePairs.push([paramName, paramValue]);
