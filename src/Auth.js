@@ -8,6 +8,7 @@
 
 //The storage service
 var defaultConfig = require('./defaultConfig.js');
+var ProviderOAuthConfigs = require('./ProviderOAuthConfigs.js');
 var storage = require('./Storage.js');
 var OAuth = require('./OAuth.js');
  
@@ -30,6 +31,7 @@ module.exports = function Auth(originRmiService, config) {
     const auth = this;
     const oauth = new OAuth(config, null);
     this.originRmiService = originRmiService;
+    this.ProviderOAuthConfigs = ProviderOAuthConfigs;
     
     this.prefixedTokenName = config.tokenPrefix ? [config.tokenPrefix, config.tokenName].join('_') : config.tokenName;
 
