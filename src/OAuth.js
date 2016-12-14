@@ -9,6 +9,8 @@
 var storage = require('./Storage.js');
 //The provider configurations
 const ProviderOAuthConfigs = require('./ProviderOAuthConfigs.js');
+const url = require('url');
+var qs = require('querystring');
  
 /**
  * OAuth service, handles the workflow to authorize a user with 3rd party services
@@ -26,7 +28,7 @@ module.exports = function OAuth(config, originRmiService) {
  * Doubles to link a user to a new service, if already authenticated
  * @param {Object} options - The options controlling the workflow
  */
-module.exports.prototype.authenticate = function(name, userData) {
+module.exports.prototype.authenticate = function(name, userData, prefixedTokenName) {
     const provider = ProviderOAuthConfigs[name];
     
     switch (provider.oauthType) {
@@ -36,7 +38,7 @@ module.exports.prototype.authenticate = function(name, userData) {
         }
         case '2.0': {
             //Pop up a window for the provider's url
-            const url = [provider.authorizationEndpoint, buildQueryString(provider)].join('?');
+            const providerUrl = [provider.authorizationEndpoint, buildQueryString(provider)].join('?');
             const width = provider.width || 500;
             const height = provider.height || 500;
             const options = {
@@ -45,11 +47,12 @@ module.exports.prototype.authenticate = function(name, userData) {
                 top: window.screenY + ((window.outerHeight - height) / 2.5),
                 left: window.screenX + ((window.outerWidth - width) / 2)
             };
-            const popup = window.open(url, '_blank', stringifyOptions(options, ','));
+            const popup = window.open(providerUrl, '_blank', stringifyOptions(options, ','));
         
             if (url === 'about:blank') {
                 popup.document.body.innerHTML = 'Loading...';
             }
+            pollPopup(popup, provider, prefixedTokenName);
             //Poll the popup to see if it is sent to the backend, then forwarded
             //Extract the info from the popup
             //If needed (some special cases) use the rmiService to make a manual call to the backend
@@ -118,6 +121,37 @@ function stringifyOptions(options) {
     return parts.join(',');
 }
 
-function pollPopup() {
-    
+function pollPopup(window, properties, prefixedTokenName) {
+    const redirectUri = url.parse(properties.redirectUri);
+    const redirectUriPath = redirectUri.host + redirectUri.pathname;
+
+    const polling = setInterval(() => {
+        if (!window || window.closed) {
+            clearInterval(polling);
+        }
+        try {
+            const popupUrlPath = window.location.host + window.location.pathname;
+
+            if (popupUrlPath === redirectUriPath) {
+                const query = qs.parse(window.location.search.substring(1).replace(/\/$/, ''));
+                const hash = qs.parse(window.location.hash.substring(1).replace(/[\/$]/, ''));
+                const params = Object.assign({}, query, hash);
+
+                if (params.error) {
+                    console.error(params.error);
+                    //TODO Error handler
+                } else {
+                    console.log(params);
+                    //TODO Hard Coded Storage Type
+                    storage.set(prefixedTokenName, window.document.getElementById('token').innerHTML, 'localStorage');
+                    window.close();
+              
+                }
+          
+            }
+        } catch (error) {
+        // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
+        // A hack to get around same-origin security policy errors in Internet Explorer.
+        }
+    }, 500);
 }

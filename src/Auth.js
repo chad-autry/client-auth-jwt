@@ -52,7 +52,7 @@ module.exports = function Auth(originRmiService, config) {
         storage.remove(this.prefixedTokenName);
     };
     this.authenticate = (name, data) => {
-        oauth.authenticate(name, data);
+        oauth.authenticate(name, data, auth.prefixedTokenName);
     }
 
     //link ommited, since it is the same as authenticate
