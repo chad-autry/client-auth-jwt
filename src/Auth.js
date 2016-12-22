@@ -49,7 +49,7 @@ module.exports = function Auth(originRmiService, config) {
     * Remove locally stored authentication
     */
     this.logout = () => {
-        storage.remove(this.prefixedTokenName);
+        storage.remove(auth.prefixedTokenName, 'localStorage');
         if (this.authChangeCallBack) {
             this.authChangeCallBack();
         }
