@@ -11,6 +11,7 @@ While not a true fork, much has been copied from [Satellizer](https://github.com
     * The redirectURL is expected to embed the token in the response body
     * Must be on same domain as page orgin
     * No plan yet for how to link accounts
+* There is no compiled version of auth-jwt, make sure it is not excluded from your own app's build/minification
 * Removed redundant methods
 
 ## Useage
