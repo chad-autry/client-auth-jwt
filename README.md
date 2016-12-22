@@ -7,6 +7,11 @@ While not a true fork, much has been copied from [Satellizer](https://github.com
 * Written without typescript, using syntax I'm most comfortable with
 * Written with the build system I'm most comfrotable with
 * Refactored classes to make a bit simpler to my way of thinking
+* Consolidated RedirectURL and URL
+    * The redirectURL is expected to embed the token in the response body
+    * Must be on same domain as page orgin
+    * No plan yet for how to link accounts
+* There is no compiled version of auth-jwt, make sure it is not excluded from your own app's build/minification
 * Removed redundant methods
 
 ## Useage
@@ -20,7 +25,18 @@ var authService = new require('auth-jwt')(jqueryRMI);
 //Configure the 3rd party providers on the service as required
 authService.providerOAuthConfigs['google'].clientId = 'GoogleClientId';
 
-//Bind authService.isAuthenticated() to control showing login button
+//After authenticating on the server, respond with the token embeded in the html
+<html>
+    <body>
+        <!--This token is pre-created with 'John Doe' as the user in the payload for the static demo.
+            Normally a server would validate the authorization parameters and dynamically generate a JWT-->
+        <div id="token">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEb2UifQ.xuEv8qrfXu424LZk8bVgr9MQJUIrp1rHcPyZw_KSsds</div>
+    </body>
+</html>
+
+//Listen to the Auth service for authentication changes
+
+//Use authService.isAuthenticated() to control showing login button
 //Get data embedded in the JWT from the server, for client side use authService.getPayload().name
 
 ```
