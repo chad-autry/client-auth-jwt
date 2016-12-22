@@ -29,7 +29,7 @@ module.exports = function Auth(originRmiService, config) {
         config = {...config, ...defaultConfig};
     }
     const auth = this;
-    const oauth = new OAuth(config, null);
+    const oauth = new OAuth(config, this, null);
     this.originRmiService = originRmiService;
     this.ProviderOAuthConfigs = ProviderOAuthConfigs;
     
@@ -50,6 +50,9 @@ module.exports = function Auth(originRmiService, config) {
     */
     this.logout = () => {
         storage.remove(this.prefixedTokenName);
+        if (this.authChangeCallBack) {
+            this.authChangeCallBack();
+        }
     };
     this.authenticate = (name, data) => {
         oauth.authenticate(name, data, auth.prefixedTokenName);
@@ -63,7 +66,7 @@ module.exports = function Auth(originRmiService, config) {
     * @return {boolean} - True if a user is currentlly logged on
     */
     this.isAuthenticated = () => {
-        const token = storage.get(this.prefixedTokenName);
+        const token = storage.get(this.prefixedTokenName, 'localStorage');
 
         if (token) {  // Token is present
             if (token.split('.').length === 3) {  // Token with a valid JWT format XXX.YYY.ZZZ
@@ -87,7 +90,7 @@ module.exports = function Auth(originRmiService, config) {
     * Extract the payload from the stored JWT
     */
     this.getPayload = () => {
-        const token = storage.get(auth.prefixedTokenName);
+        const token = storage.get(auth.prefixedTokenName, 'localStorage');
 
         if (token && token.split('.').length === 3) {
             try {
@@ -104,13 +107,24 @@ module.exports = function Auth(originRmiService, config) {
     * Get the JWT token from storage
     */
     this.getToken = ()  => {
-        return storage.get(auth.prefixedTokenName);
+        return storage.get(auth.prefixedTokenName, 'localStorage');
     };
+    
+    /**
+     * Set the callback for authentication changes
+     */
+    this.onAuthChange = (callBack) => this.authChangeCallBack = callBack;
    
    /**
     * Set the JWT token into storage
     */
-    this.setToken = (token) => storage.setToken({ access_token: token });
+    this.setToken = (token) => {
+        //TODO Hard Coded storage type
+        storage.set(auth.prefixedTokenName, token, 'localStorage');
+        if (this.authChangeCallBack) {
+            this.authChangeCallBack();
+        }
+    };
      
    //remove token ommited since it is the same function as logout
 

@@ -5,8 +5,6 @@
  * @module OAuth
  */
 
-//The storage service
-var storage = require('./Storage.js');
 //The provider configurations
 const ProviderOAuthConfigs = require('./ProviderOAuthConfigs.js');
 const url = require('url');
@@ -16,10 +14,12 @@ var qs = require('querystring');
  * OAuth service, handles the workflow to authorize a user with 3rd party services
  * @constructor
  * @param config - The config for auth-jwt
+ * @param authService - The top level authorization service to use
  * @param originRmiService - The service used to call the host server (not required for all workflows)
  */
-module.exports = function OAuth(config, originRmiService) {
+module.exports = function OAuth(config, authService, originRmiService) {
     this.config = config;
+    this.authService = authService;
     this.originRmiService = originRmiService;
 };
 
@@ -52,7 +52,7 @@ module.exports.prototype.authenticate = function(name, userData, prefixedTokenNa
             if (url === 'about:blank') {
                 popup.document.body.innerHTML = 'Loading...';
             }
-            pollPopup(popup, provider, prefixedTokenName);
+            pollPopup(popup, provider, prefixedTokenName, this.authService);
             //Poll the popup to see if it is sent to the backend, then forwarded
             //Extract the info from the popup
             //If needed (some special cases) use the rmiService to make a manual call to the backend
@@ -83,7 +83,7 @@ function buildQueryString(providerOptions) {
             }
             if (paramName === 'state') {
                 const stateName = providerOptions.name + '_state';
-                paramValue = encodeURIComponent(storage.get(stateName));
+               // paramValue = encodeURIComponent(storage.get(stateName));
             }
             if (paramName === 'scope' && Array.isArray(paramValue)) {
                 paramValue = paramValue.join(providerOptions.scopeDelimiter);
@@ -121,7 +121,7 @@ function stringifyOptions(options) {
     return parts.join(',');
 }
 
-function pollPopup(window, properties, prefixedTokenName) {
+function pollPopup(window, properties, prefixedTokenName, authService) {
     const redirectUri = url.parse(properties.redirectUri);
     const redirectUriPath = redirectUri.host + redirectUri.pathname;
 
@@ -143,7 +143,8 @@ function pollPopup(window, properties, prefixedTokenName) {
                 } else {
                     console.log(params);
                     //TODO Hard Coded Storage Type
-                    storage.set(prefixedTokenName, window.document.getElementById('token').innerHTML, 'localStorage');
+                    authService.setToken(window.document.getElementById('token').innerHTML);
+                    //storage.set(prefixedTokenName, window.document.getElementById('token').innerHTML, 'localStorage');
                     window.close();
               
                 }
