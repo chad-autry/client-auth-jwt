@@ -1,5 +1,5 @@
 {
-  "name": "auth-jwt",
+  "name": "client-auth-jwt",
   "version": "0.2.0",
   "description": "Token-based JS Authentication",
   "scripts": {
