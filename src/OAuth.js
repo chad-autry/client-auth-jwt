@@ -132,7 +132,7 @@ function pollPopup(window, properties, prefixedTokenName, authService) {
         try {
             const popupUrlPath = window.location.host + window.location.pathname;
 
-            if (popupUrlPath === redirectUriPath) {
+            if (popupUrlPath.startsWith(redirectUriPath)) {
                 const query = qs.parse(window.location.search.substring(1).replace(/\/$/, ''));
                 const hash = qs.parse(window.location.hash.substring(1).replace(/[\/$]/, ''));
                 const params = Object.assign({}, query, hash);
