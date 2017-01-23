@@ -96,7 +96,8 @@ module.exports = function Auth(originRmiService, config) {
             try {
                 const base64Url = token.split('.')[1];
                 const base64 = base64Url.replace('-', '+').replace('_', '/');
-                return JSON.parse(decodeBase64(base64));
+                const payload = JSON.parse(decodeBase64(base64));
+                return payload;
             } catch (e) {
                 // no-op
             }
