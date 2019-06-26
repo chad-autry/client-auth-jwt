@@ -44,7 +44,7 @@
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.7",
     "babel-preset-latest": "^6.16.0",
-    "eslint": "^3.10.2",
+    "eslint": ">=4.18.2",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.4.4",
     "webpack": "^1.13.3"
