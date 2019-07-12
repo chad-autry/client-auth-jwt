@@ -99,7 +99,7 @@ module.exports = function Auth(originRmiService, config) {
                 const payload = JSON.parse(decodeBase64(base64));
                 return payload;
             } catch (e) {
-                // no-op
+                return {};
             }
         }
     };
