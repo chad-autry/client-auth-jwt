@@ -81,10 +81,7 @@ function buildQueryString(providerOptions) {
             if (paramName === 'redirect_uri' && !paramValue) {
                 return;
             }
-            if (paramName === 'state') {
-                const stateName = providerOptions.name + '_state';
-               // paramValue = encodeURIComponent(storage.get(stateName));
-            }
+
             if (paramName === 'scope' && Array.isArray(paramValue)) {
                 paramValue = paramValue.join(providerOptions.scopeDelimiter);
                 if (providerOptions.scopePrefix) {
