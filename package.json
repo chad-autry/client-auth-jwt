@@ -1,6 +1,6 @@
 {
   "name": "client-auth-jwt",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Token-based JS Authentication",
   "scripts": {
     "build": "mkdirp ./target && webpack --config ./webpack-prod.config.js",
