@@ -78,7 +78,7 @@ module.exports = function Auth(originRmiService, config) {
             }
             if (typeof jwtPayload.exp === 'number') {  // JWT with an optonal expiration claims
                 let now = Math.round(new Date().getTime() / 1000);
-                return jwtPayload.exp < now;
+                return jwtPayload.exp > now;
             }
             
         }
